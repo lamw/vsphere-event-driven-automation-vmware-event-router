@@ -1,0 +1,35 @@
+apiVersion: event-router.vmware.com/v1alpha1
+kind: RouterConfig
+metadata:
+  name: router-config-vcenter-knative
+  labels:
+    key: value
+eventProvider:
+  type: vcenter
+  name: veba-demo-vc-01
+  vcenter:
+    address: https://FILL_ME_IN/sdk #hostname or IP of VMC vCenter Server
+    insecureSSL: true
+    checkpoint: false
+    auth:
+      type: basic_auth
+      basicAuth:
+        username: cloudadmin@vmc.local
+        password: FILL_ME_IN # Password for cloudadmin
+eventProcessor:
+  type: knative
+  name: veba-demo-knative
+  knative:
+    encoding: binary
+    insecureSSL: false
+    destination:
+      ref:
+        apiVersion: eventing.knative.dev/v1
+        kind: Broker
+        name: default
+        namespace: vmware-functions
+metricsProvider:
+  type: default
+  name: veba-demo-metrics
+  default:
+    bindAddress: "0.0.0.0:8082"

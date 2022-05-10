@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: vmware-event-router
+  name: vmware-event-router
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vmware-event-router
+  template:
+    metadata:
+      labels:
+        app: vmware-event-router
+    spec:
+      serviceAccountName: vmware-event-router
+      containers:
+        - image: us.gcr.io/daisy-284300/veba/router:development
+          args: [ "-config", "/etc/vmware-event-router/event-router-config.yaml", "-log-level", "info" ]
+          name: vmware-event-router
+          resources:
+            requests:
+              cpu: 200m
+              memory: 200Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/vmware-event-router/
+              readOnly: true
+      volumes:
+        - name: config
+          secret:
+            secretName: event-router-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: vmware-event-router
+  name: vmware-event-router
+spec:
+  ports:
+    - port: 8082
+      protocol: TCP
+      targetPort: 8082 # must match port defined in metrics server section
+  selector:
+    app: vmware-event-router
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vmware-event-router

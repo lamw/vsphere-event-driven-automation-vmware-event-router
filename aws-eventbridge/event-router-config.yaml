@@ -1,0 +1,35 @@
+apiVersion: event-router.vmware.com/v1alpha1
+kind: RouterConfig
+metadata:
+  name: router-config-vcenter-aws
+  labels:
+    key: value
+eventProvider:
+  type: vcenter
+  name: veba-demo-vc-01
+  vcenter:
+    address: https://FILL_ME_IN/sdk #hostname or IP of VMC vCenter Server
+    insecureSSL: true
+    checkpoint: false
+    auth:
+      type: basic_auth
+      basicAuth:
+        username: cloudadmin@vmc.local
+        password: FILL_ME_IN # Password for cloudadmin
+eventProcessor:
+  type: aws_event_bridge
+  name: veba-demo-aws
+  awsEventBridge:
+    eventBus: arn:aws:events:us-west-2:FILL_ME_IN:event-bus/VMware-VMC # EB Bus ARN
+    region: us-west-2 # EB Region
+    ruleARN: arn:aws:events:us-west-2:FILL_ME_IN:rule/VMware-VMC/vCenter-Event-Rule # EB Rule ARN
+    auth:
+      type: aws_access_key
+      awsAccessKeyAuth:
+        accessKey: FILL_ME_IN # ASW Access Key
+        secretKey: FILL_ME_IN # AWS Secret Key
+metricsProvider:
+  type: default
+  name: veba-demo-metrics
+  default:
+    bindAddress: "0.0.0.0:8082"
