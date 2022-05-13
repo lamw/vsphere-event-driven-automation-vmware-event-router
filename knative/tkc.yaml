@@ -1,0 +1,21 @@
+apiVersion: run.tanzu.vmware.com/v1alpha1
+kind: TanzuKubernetesCluster
+metadata:
+  name: tkc-veba-knative
+  namespace: wlam-ns1
+spec:
+  distribution:
+    version: v1.21.6
+  topology:
+    controlPlane:
+      class: best-effort-medium
+      count: 3
+      storageClass: vmc-workload-storage-policy-cluster-1
+    workers:
+      class: best-effort-medium
+      count: 3
+      storageClass: vmc-workload-storage-policy-cluster-1
+  settings:
+    storage:
+      classes: ["vmc-workload-storage-policy-cluster-1"]
+      defaultClass: vmc-workload-storage-policy-cluster-1
